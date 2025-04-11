@@ -9,7 +9,7 @@ abstract class BaseTree<K: Comparable<K>, V, Node : BaseNode<K, V, Node>>() {
         private set
 
     constructor(key: K, value: V) : this() {
-        set(key, value)
+        set(key, value)   
     }
 
     fun Clear() {
