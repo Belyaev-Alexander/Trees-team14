@@ -41,7 +41,7 @@ class RBTree<K : Comparable<K>, V> {
         var current = node
         while (current.parent?.color == Color.RED) {
             val parent = current.parent!!
-            val grandparent = parent.parent!!
+            val grandparent = parent.parent ?: break
 
             if (parent == grandparent.left) {
                 val uncle = grandparent.right
