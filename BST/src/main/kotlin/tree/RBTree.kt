@@ -226,5 +226,15 @@ class RBTree<K : Comparable<K>, V> {
         }
         v?.parent = u.parent
     }
-    fun search(key: K): V? { /* ... */ }
+    fun search(key: K): Result<V> {
+        var current = root
+        while (current != null) {
+            current = when {
+                key < current.key -> current.left
+                key > current.key -> current.right
+                else -> return Result.success(current.value)
+            }
+        }
+        return Result.failure(NoSuchElementException("Key $key not found"))
+    }
 }

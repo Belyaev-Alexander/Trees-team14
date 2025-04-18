@@ -86,5 +86,120 @@ class RBTreeTest {
         }
         countBlackNodes(tree.root)
     }
+
+    @Test
+    fun left-case1 - red sibling becomes black() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(70, "A")     // B
+            insert(30, "B")     // R (брат красный)
+            insert(40, "C")     // B
+        }
+
+        tree.delete(70) // Вызовет левый случай 1
+        assertEquals(30, tree.root?.left?.key)
+        assertEquals(Color.BLACK, tree.root?.left?.color)
+    }
+
+    @Test
+    fun left-case2 - black sibling with black children() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(70, "A")     // B
+            insert(30, "B")     // B (брат и дети чёрные)
+        }
+
+        tree.delete(70) // Вызовет левый случай 2
+        assertEquals(30, tree.root?.left?.key)
+        assertEquals(Color.RED, tree.root?.left?.color)
+    }
+
+    @Test
+    fun right-case1 - red sibling becomes black() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(30, "A")     // B
+            insert(70, "B")     // R (брат красный)
+            insert(60, "C")     // B
+        }
+
+        tree.delete(30) // Вызовет правый случай 1
+        assertEquals(70, tree.root?.right?.key)
+        assertEquals(Color.BLACK, tree.root?.right?.color)
+    }
+
+    @Test
+    fun right-case2 - black sibling with black children() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(30, "A")     // B
+            insert(70, "B")     // B (брат и дети чёрные)
+        }
+
+        tree.delete(30) // Вызовет правый случай 2
+        assertEquals(70, tree.root?.right?.key)
+        assertEquals(Color.RED, tree.root?.right?.color)
+    }
+
+    @Test
+    fun left-cases3-4 - rotations() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(70, "A")     // B
+            insert(30, "B")     // B
+            insert(35, "C")     // R (вызовет случай 3 → 4)
+        }
+
+        tree.delete(70)
+        assertEquals(35, tree.root?.left?.key)
+        assertEquals(Color.BLACK, tree.root?.left?.color)
+    }
+
+    @Test
+    fun right-cases3-4 - mirror rotations() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")  // B
+            insert(30, "A")     // B
+            insert(70, "B")     // B
+            insert(65, "C")     // R (вызовет зеркальные 3 → 4)
+        }
+
+        tree.delete(30)
+        assertEquals(65, tree.root?.right?.key)
+        assertEquals(Color.BLACK, tree.root?.right?.color)
+    }
+
+    @Test
+    fun verify invariants after all cases() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "Root")
+            insert(30, "A")
+            insert(70, "B")
+            insert(20, "C")
+            insert(40, "D")
+            insert(60, "E")
+        }
+
+        // Последовательно вызываем все случаи
+        tree.delete(20) // Может вызвать левый случай 1/2
+        tree.delete(60) // Может вызвать правый случай 1/2
+        tree.delete(40) // Может вызвать повороты
+
+        assertTrue(verifyInvariants(tree.root))
+    }
+    @Test
+    fun search returns correct values or null() {
+        val tree = RedBlackTree<Int, String>().apply {
+            insert(50, "A")
+            insert(30, "B")
+            insert(70, "C")
+        }
+
+        assertAll(
+            { assertEquals("A", tree.search(50)) },  // Корень
+            { assertEquals("B", tree.search(30)) },  // Левый потомок
+            { assertNull(tree.search(99)) }          // Несуществующий ключ
+        )
+    }
 }
 
