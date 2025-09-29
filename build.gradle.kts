@@ -1,7 +1,13 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.0" // Kotlin + JVM
+    id("org.jetbrains.kotlin.jvm") version "1.9.22" // Kotlin + JVM
+    id("jacoco")
 }
-
+jacoco{
+    toolVersion = "0.8.12"
+}
+kotlin{
+    jvmToolchain(21)
+}
 repositories {
     mavenCentral() // Репозиторий для загрузки библиотек
 }
@@ -16,4 +22,12 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform() // Активация JUnit 5
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // Зависит от выполнения тестов
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
+    }
 }
